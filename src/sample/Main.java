@@ -1,5 +1,9 @@
 package sample;
 
+// Java program to create multiple tabs
+// and add it to the TabPane
+
+import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,16 +12,29 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
-    @Override
-    public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 300, 275));
-        primaryStage.show();
-    }
+  // launch the application
+  public void start(Stage stage) throws IOException {
 
+    Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+    // set title for the stage
+    stage.setTitle("Production Project");
+
+    // create a scene
+    Scene scene = new Scene(root);
+    scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+
+    // set the scene
+    stage.setScene(scene);
+
+    stage.show();
+  }
+
+  // Main Method
+  public static void main(String args[]) {
+
+    // launch the application
+    launch(args);
+  }
+
 }
