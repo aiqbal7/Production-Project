@@ -1,4 +1,4 @@
-package sample;
+package core;
 
 // Java program to create multiple tabs
 // and add it to the TabPane
