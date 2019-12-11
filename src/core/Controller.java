@@ -6,10 +6,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 public class Controller {
@@ -23,10 +25,13 @@ public class Controller {
   private TextField manufacturer;
 
   @FXML
-  private ChoiceBox<String> productType;
+  private ChoiceBox<ItemType> productType;
 
   @FXML
   private ComboBox<Integer> chooseQuality;
+
+  @FXML
+  private TextArea productionLog;
 
   @FXML
   private void addProduct(ActionEvent event) throws SQLException {
@@ -35,7 +40,7 @@ public class Controller {
     String sql = "INSERT INTO PRODUCT(NAME, TYPE, MANUFACTURER) VALUES (?, ?, ?)";
     PreparedStatement stmt = connection.prepareStatement(sql);
     stmt.setString(1, productName.getText());
-    stmt.setString(2, productType.getValue());
+    stmt.setString(2, productType.getValue().label);
     stmt.setString(3, manufacturer.getText());
     stmt.executeUpdate();
 
@@ -51,7 +56,7 @@ public class Controller {
 
   @FXML
   private void recordProduction(ActionEvent event) {
-    System.out.println("Record Produciton");
+    System.out.println("Record Production");
   }
 
   @FXML
@@ -63,11 +68,31 @@ public class Controller {
     } catch (ClassNotFoundException e) {
       System.err.println("Unable to connect to database: " + e);
     }
-    productType.getItems().addAll("Electronics", "Toys", "Household", "Clothes");
+    productType.getItems().addAll(ItemType.values());
     productType.getSelectionModel().selectFirst();
     chooseQuality.getItems().addAll(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     chooseQuality.setEditable(true);
     chooseQuality.getSelectionModel().selectFirst();
+    testMultimedia();
   }
+
+  public static void testMultimedia() {
+    AudioPlayer newAudioProduct = new AudioPlayer("DP-X1A", "Onkyo",
+        "DSD/FLAC/ALAC/WAV/AIFF/MQA/Ogg-Vorbis/MP3/AAC", "M3U/PLS/WPL");
+    Screen newScreen = new Screen("720x480", 40, 22);
+    MoviePlayer newMovieProduct = new MoviePlayer("DBPOWER MK101", "OracleProduction", newScreen,
+        MonitorType.LCD);
+    ArrayList<MultimediaControl> productList = new ArrayList<MultimediaControl>();
+    productList.add(newAudioProduct);
+    productList.add(newMovieProduct);
+    for (MultimediaControl p : productList) {
+      System.out.println(p);
+      p.play();
+      p.stop();
+      p.next();
+      p.previous();
+    }
+  }
+
 
 }
