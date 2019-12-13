@@ -13,6 +13,13 @@ public abstract class Product implements Item {
     this.Type = type;
   }
 
+  Product(int id, String name, String manufacturer, ItemType type) {
+    this.Id = id;
+    this.Name = name;
+    this.Manufacturer = manufacturer;
+    this.Type = type;
+  }
+
   public String toString() {
     return "Name: " + Name + "\n" + "Manufacturer: " + Manufacturer + "\n" + "Type: "
         + Type;

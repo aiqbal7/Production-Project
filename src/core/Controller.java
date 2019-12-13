@@ -7,16 +7,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 public class Controller {
 
   private Connection connection;
+  private ObservableList<Product> productLine;
 
   @FXML
   private TextField productName;
@@ -34,24 +37,35 @@ public class Controller {
   private TextArea productionLog;
 
   @FXML
+  private TableView<Product> productTable;
+
+  @FXML
+  private TableColumn<?, ?> productTableID;
+
+  @FXML
+  private TableColumn<?, ?> productTableName;
+
+  @FXML
+  private TableColumn<?, ?> productTableManufacturer;
+
+  @FXML
+  private TableColumn<?, ?> productTableType;
+
+  @FXML
+  private ListView<String> produceListView;
+
+
+  @FXML
   private void addProduct(ActionEvent event) throws SQLException {
     System.out.println("Adding product");
 
     String sql = "INSERT INTO PRODUCT(NAME, TYPE, MANUFACTURER) VALUES (?, ?, ?)";
     PreparedStatement stmt = connection.prepareStatement(sql);
     stmt.setString(1, productName.getText());
-    stmt.setString(2, productType.getValue().label);
+    stmt.setString(2, productType.getValue().name());
     stmt.setString(3, manufacturer.getText());
     stmt.executeUpdate();
-
-    sql = "SELECT * from PRODUCT";
-    Statement selectStmt = connection.createStatement();
-    ResultSet resultSet = selectStmt.executeQuery(sql);
-    while (resultSet.next()) {
-      System.out.println(
-          resultSet.getString(1) + ", " + resultSet.getString(2) + ", " + resultSet.getString(3)
-              + ", " + resultSet.getString(4));
-    }
+    productLine = populateList();
   }
 
   @FXML
@@ -74,6 +88,15 @@ public class Controller {
     chooseQuality.setEditable(true);
     chooseQuality.getSelectionModel().selectFirst();
     testMultimedia();
+
+    productLine = populateList();
+    productTableID.setCellValueFactory(new PropertyValueFactory("Id"));
+    productTableName.setCellValueFactory(new PropertyValueFactory("Name"));
+    productTableManufacturer.setCellValueFactory(new PropertyValueFactory("Manufacturer"));
+    productTableType.setCellValueFactory(new PropertyValueFactory("Type"));
+    productTable.setItems(productLine);
+
+    produceListView.setItems(FXCollections.observableArrayList(productLine.stream().map(Product::getName).collect(Collectors.toList())));
   }
 
   public static void testMultimedia() {
@@ -82,7 +105,7 @@ public class Controller {
     Screen newScreen = new Screen("720x480", 40, 22);
     MoviePlayer newMovieProduct = new MoviePlayer("DBPOWER MK101", "OracleProduction", newScreen,
         MonitorType.LCD);
-    ArrayList<MultimediaControl> productList = new ArrayList<MultimediaControl>();
+    ArrayList<MultimediaControl> productList = new ArrayList<>();
     productList.add(newAudioProduct);
     productList.add(newMovieProduct);
     for (MultimediaControl p : productList) {
@@ -94,5 +117,17 @@ public class Controller {
     }
   }
 
-
+  private ObservableList<Product> populateList() {
+    ObservableList<Product> list = FXCollections.observableArrayList();
+    try {
+      String sql = "SELECT * from PRODUCT";
+      Statement selectStmt = this.connection.createStatement();
+      ResultSet resultSet = selectStmt.executeQuery(sql);
+      while (resultSet.next()) {
+        list.add(new Widget(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(4), ItemType.valueOf(resultSet.getString(3))));
+      }
+    } finally {
+      return list;
+    }
+  }
 }
