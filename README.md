@@ -10,8 +10,7 @@ Diagram:
 ![db](https://user-images.githubusercontent.com/43644319/70857886-ca9e0b80-1ec4-11ea-9966-b83f90cfaf98.jpg)
 
 Built with:
-IntelliJ
-Scene Builder
+IntelliJ and Scene Builder
 
 Author:
 Ahsan Iqbal
