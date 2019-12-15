@@ -11,18 +11,20 @@ public class ProductionRecord {
 
   private static int serialSuffix = 0;
 
-  public ProductionRecord (Product product, int count) {
-    this.serialNumber = product.getManufacturer().substring(0,3) + product.getType().label + String.format("%05d", serialSuffix++);
+  public ProductionRecord(Product product, int count) {
+    this.serialNumber = product.getManufacturer().substring(0, 3) + product.getType().label + String
+        .format("%05d", serialSuffix++);
   }
 
-  public ProductionRecord (int productID) {
+  public ProductionRecord(int productID) {
     this.productID = productID;
     this.productionNumber = 0;
     this.serialNumber = "0";
     this.dateProduced = new Date();
   }
 
-  public ProductionRecord (int productionNumber, int productID, String serialNumber, Date dateProduced) {
+  public ProductionRecord(int productionNumber, int productID, String serialNumber,
+      Date dateProduced) {
     this.productionNumber = productionNumber;
     this.productID = productID;
     this.serialNumber = serialNumber;

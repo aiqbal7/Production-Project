@@ -8,12 +8,18 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 public class Controller {
@@ -122,7 +128,8 @@ public class Controller {
     productTableType.setCellValueFactory(new PropertyValueFactory("Type"));
     productTable.setItems(productLine);
 
-    produceListView.setItems(FXCollections.observableArrayList(productLine.stream().map(Product::getName).collect(Collectors.toList())));
+    produceListView.setItems(FXCollections.observableArrayList(
+        productLine.stream().map(Product::getName).collect(Collectors.toList())));
   }
 
   public static void testMultimedia() {
@@ -150,7 +157,8 @@ public class Controller {
       Statement selectStmt = this.connection.createStatement();
       ResultSet resultSet = selectStmt.executeQuery(sql);
       while (resultSet.next()) {
-        list.add(new Widget(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(4), ItemType.valueOf(resultSet.getString(3))));
+        list.add(new Widget(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(4),
+            ItemType.valueOf(resultSet.getString(3))));
       }
     } finally {
       return list;
