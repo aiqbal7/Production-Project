@@ -1,10 +1,13 @@
 package core;
 
 import db.DBHandler;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -77,7 +80,9 @@ public class Controller {
   private void addProduct(ActionEvent event) throws SQLException {
     System.out.println("Adding product");
 
-    if (!verifyAddProduct(productName, manufacturer)) return;
+    if (!verifyAddProduct(productName, manufacturer)) {
+      return;
+    }
 
     String sql = "INSERT INTO PRODUCT(NAME, TYPE, MANUFACTURER) VALUES (?, ?, ?)";
     PreparedStatement stmt = connection.prepareStatement(sql);
@@ -90,14 +95,16 @@ public class Controller {
   }
 
   @FXML
-  private void recordProduction(ActionEvent event) throws SQLException{
+  private void recordProduction(ActionEvent event) throws SQLException {
     System.out.println("Recording Production");
-    if (!verifyProduction(produceListView, chooseQuality)) return;
+    if (!verifyProduction(produceListView, chooseQuality)) {
+      return;
+    }
     Product product = produceListView.getSelectionModel().getSelectedItem();
     ProductionRecord productionRecord = new ProductionRecord(product, 0);
     String sql =
-            "INSERT INTO PRODUCTIONRECORD(PRODUCTION_NUM, PRODUCT_ID,"
-                    + " SERIAL_NUM, DATE_PRODUCED ) VALUES (?, ?, ?, ?)";
+        "INSERT INTO PRODUCTIONRECORD(PRODUCTION_NUM, PRODUCT_ID,"
+            + " SERIAL_NUM, DATE_PRODUCED ) VALUES (?, ?, ?, ?)";
 
     PreparedStatement stmt = connection.prepareStatement(sql);
     stmt.setInt(1, productionRecord.getProductionNumber());
@@ -118,7 +125,9 @@ public class Controller {
   @FXML
   private void addEmployee(ActionEvent event) {
     System.out.println("Adding Employee");
-    if (!verifyAddEmployee(employeeName, employeePassword)) return;
+    if (!verifyAddEmployee(employeeName, employeePassword)) {
+      return;
+    }
     Employee employee = new Employee(employeeName.getText(), employeePassword.getText());
     StringBuilder text = new StringBuilder(employeeOutput.getText());
     text.append("Added New Employee\n=================\n");
@@ -193,11 +202,13 @@ public class Controller {
     }
   }
 
-  private boolean verifyProduction(ListView<Product> produceListView, ComboBox<Integer> chooseQuality) {
+  private boolean verifyProduction(ListView<Product> produceListView,
+      ComboBox<Integer> chooseQuality) {
     if (produceListView.getSelectionModel().getSelectedItem() == null) {
       System.err.println("Product must be selected");
       return false;
-    } else if (chooseQuality.getSelectionModel().getSelectedItem() == null || !String.valueOf(chooseQuality.getSelectionModel().getSelectedItem()).matches("\\d+")) {
+    } else if (chooseQuality.getSelectionModel().getSelectedItem() == null || !String
+        .valueOf(chooseQuality.getSelectionModel().getSelectedItem()).matches("\\d+")) {
       System.err.println("Quality must be valid numeric");
       return false;
     }
