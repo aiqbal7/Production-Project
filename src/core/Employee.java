@@ -87,7 +87,6 @@ public class Employee {
                 + password
                 + "\n"
                 +"Reversed Password: "
-                + "\n"
                 + encode;
     }
 

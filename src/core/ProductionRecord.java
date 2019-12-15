@@ -14,6 +14,7 @@ public class ProductionRecord {
   public ProductionRecord(Product product, int count) {
     this.serialNumber = product.getManufacturer().substring(0, 3) + product.getType().label + String
         .format("%05d", serialSuffix++);
+    dateProduced = new Date();
   }
 
   public ProductionRecord(int productID) {

@@ -1,11 +1,8 @@
 package core;
 
 import db.DBHandler;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
@@ -58,7 +55,7 @@ public class Controller {
   private TableColumn<?, ?> productTableType;
 
   @FXML
-  private ListView<String> produceListView;
+  private ListView<Product> produceListView;
 
   @FXML
   private TextField employeeName;
@@ -80,23 +77,48 @@ public class Controller {
   private void addProduct(ActionEvent event) throws SQLException {
     System.out.println("Adding product");
 
+    if (!verifyAddProduct(productName, manufacturer)) return;
+
     String sql = "INSERT INTO PRODUCT(NAME, TYPE, MANUFACTURER) VALUES (?, ?, ?)";
     PreparedStatement stmt = connection.prepareStatement(sql);
     stmt.setString(1, productName.getText());
     stmt.setString(2, productType.getValue().name());
     stmt.setString(3, manufacturer.getText());
     stmt.executeUpdate();
-    productLine = populateList();
+    stmt.close();
+    setupProducts();
   }
 
   @FXML
-  private void recordProduction(ActionEvent event) {
-    System.out.println("Record Production");
+  private void recordProduction(ActionEvent event) throws SQLException{
+    System.out.println("Recording Production");
+    if (!verifyProduction(produceListView, chooseQuality)) return;
+    Product product = produceListView.getSelectionModel().getSelectedItem();
+    ProductionRecord productionRecord = new ProductionRecord(product, 0);
+    String sql =
+            "INSERT INTO PRODUCTIONRECORD(PRODUCTION_NUM, PRODUCT_ID,"
+                    + " SERIAL_NUM, DATE_PRODUCED ) VALUES (?, ?, ?, ?)";
+
+    PreparedStatement stmt = connection.prepareStatement(sql);
+    stmt.setInt(1, productionRecord.getProductionNumber());
+    stmt.setInt(2, productionRecord.getProductID());
+    stmt.setString(3, productionRecord.getSerialNumber());
+    stmt.setTimestamp(4, Timestamp.from(productionRecord.getDateProduced().toInstant()));
+
+    stmt.executeUpdate();
+    stmt.close();
+
+    StringBuilder text = new StringBuilder(productionLog.getText());
+    text.append("Recorded new Production\n====================\n");
+    text.append(productionRecord.toString()).append("\n\n");
+    productionLog.clear();
+    productionLog.setText(text.toString());
   }
 
   @FXML
   private void addEmployee(ActionEvent event) {
-    System.out.println("Added Employee");
+    System.out.println("Adding Employee");
+    if (!verifyAddEmployee(employeeName, employeePassword)) return;
     Employee employee = new Employee(employeeName.getText(), employeePassword.getText());
     StringBuilder text = new StringBuilder(employeeOutput.getText());
     text.append("Added New Employee\n=================\n");
@@ -106,7 +128,7 @@ public class Controller {
   }
 
   @FXML
-  public void initialize() throws SQLException {
+  public void initialize() throws Exception {
     System.out.println("Initializing database");
     // Get Connection from dbHandler
     try {
@@ -120,16 +142,15 @@ public class Controller {
     chooseQuality.setEditable(true);
     chooseQuality.getSelectionModel().selectFirst();
     testMultimedia();
-
     productLine = populateList();
+    setupProducts();
     productTableID.setCellValueFactory(new PropertyValueFactory("Id"));
     productTableName.setCellValueFactory(new PropertyValueFactory("Name"));
     productTableManufacturer.setCellValueFactory(new PropertyValueFactory("Manufacturer"));
     productTableType.setCellValueFactory(new PropertyValueFactory("Type"));
     productTable.setItems(productLine);
 
-    produceListView.setItems(FXCollections.observableArrayList(
-        productLine.stream().map(Product::getName).collect(Collectors.toList())));
+    produceListView.setItems(productLine);
   }
 
   public static void testMultimedia() {
@@ -150,6 +171,13 @@ public class Controller {
     }
   }
 
+  private void setupProducts() {
+    productLine.clear();
+    productLine = populateList();
+    productTable.setItems(productLine);
+    produceListView.setItems(productLine);
+  }
+
   private ObservableList<Product> populateList() {
     ObservableList<Product> list = FXCollections.observableArrayList();
     try {
@@ -163,5 +191,38 @@ public class Controller {
     } finally {
       return list;
     }
+  }
+
+  private boolean verifyProduction(ListView<Product> produceListView, ComboBox<Integer> chooseQuality) {
+    if (produceListView.getSelectionModel().getSelectedItem() == null) {
+      System.err.println("Product must be selected");
+      return false;
+    } else if (chooseQuality.getSelectionModel().getSelectedItem() == null || !String.valueOf(chooseQuality.getSelectionModel().getSelectedItem()).matches("\\d+")) {
+      System.err.println("Quality must be valid numeric");
+      return false;
+    }
+    return true;
+  }
+
+  private boolean verifyAddEmployee(TextField employeeName, TextField employeePassword) {
+    if (employeeName.getText().isEmpty()) {
+      System.err.println("Employee name can't be empty");
+      return false;
+    } else if (employeePassword.getText().isEmpty()) {
+      System.err.println("Employee pass can't be empty");
+      return false;
+    }
+    return true;
+  }
+
+  private boolean verifyAddProduct(TextField productName, TextField manufacturer) {
+    if (productName.getText().isEmpty()) {
+      System.err.println("Product name can't be empty");
+      return false;
+    } else if (manufacturer.getText().isEmpty()) {
+      System.err.println("Manufacturer can't be empty");
+      return false;
+    }
+    return true;
   }
 }
