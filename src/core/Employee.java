@@ -84,10 +84,7 @@ public class Employee {
                 + email
                 + "\n"
                 + "Initial Password : "
-                + password
-                + "\n"
-                + "Encoded Password :"
-                + encode;
+                + password;
     }
 
     public String getName() {

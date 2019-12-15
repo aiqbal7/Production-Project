@@ -54,6 +54,21 @@ public class Controller {
   @FXML
   private ListView<String> produceListView;
 
+  @FXML
+  private TextField employeeName;
+
+  @FXML
+  private TextField employeePassword;
+
+  @FXML
+  private TextField employeeEmail;
+
+  @FXML
+  private TextArea employeeOutput;
+
+  @FXML
+  private Button addEmployee;
+
 
   @FXML
   private void addProduct(ActionEvent event) throws SQLException {
@@ -71,6 +86,17 @@ public class Controller {
   @FXML
   private void recordProduction(ActionEvent event) {
     System.out.println("Record Production");
+  }
+
+  @FXML
+  private void addEmployee(ActionEvent event) {
+    System.out.println("Added Employee");
+    Employee employee = new Employee(employeeName.getText(), employeePassword.getText());
+    StringBuilder text = new StringBuilder(employeeOutput.getText());
+    text.append("Added New Employee\n=================\n");
+    text.append(employee.toString()).append("\n\n");
+    employeeOutput.clear();
+    employeeOutput.setText(text.toString());
   }
 
   @FXML

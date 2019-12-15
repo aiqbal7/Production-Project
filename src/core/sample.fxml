@@ -88,5 +88,22 @@
         </AnchorPane>
       </content>
     </Tab>
+      <Tab text="Employee">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <TextField fx:id="employeeName" layoutX="83.0" layoutY="14.0" prefHeight="25.0" prefWidth="495.0" />
+                  <Label layoutX="14.0" layoutY="18.0" text="Full Name" />
+                  <TextField fx:id="employeePassword" layoutX="83.0" layoutY="55.0" prefHeight="25.0" prefWidth="495.0" />
+                  <Label layoutX="14.0" layoutY="59.0" text="Password" />
+                  <TextField fx:id="employeeEmail" layoutX="83.0" layoutY="98.0" prefHeight="25.0" prefWidth="497.0" />
+                  <Label layoutX="16.0" layoutY="102.0" text="Email" />
+                  <TextArea fx:id="employeeOutput" layoutX="83.0" layoutY="173.0" prefHeight="184.0" prefWidth="497.0" />
+                  <Label layoutX="16.0" layoutY="249.0" text="Output" />
+                  <Button layoutX="83.0" layoutY="135.0" mnemonicParsing="false" onAction="#addEmployee" text="Add Employee" />
+               </children>
+            </AnchorPane>
+        </content>
+      </Tab>
   </tabs>
 </TabPane>
